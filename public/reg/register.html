@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Register An Account</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="reg_assets/vendor/bootstrap/css/bootstrap.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="reg_assets/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="reg_assets/fonts/iconic/css/material-design-iconic-font.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="reg_assets/vendor/animate/animate.css">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="reg_assets/vendor/css-hamburgers/hamburgers.min.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="reg_assets/vendor/animsition/css/animsition.min.css">
+<!--===============================================================================================-->
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="reg_assets/vendor/daterangepicker/daterangepicker.css">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="reg_assets/css/util.css">
+	<link rel="stylesheet" type="text/css" href="reg_assets/css/main.css">
+<!--===============================================================================================-->
+</head>
+<body>
+	
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<form class="login100-form validate-form">
+					<span class="login100-form-logo">
+						<i class="zmdi zmdi-folder-person"></i>
+					</span>
+
+					<span class="login100-form-title p-b-34 p-t-27">
+						Register
+                    </span>
+                    
+                    <div class="wrap-input100 validate-input" data-id="name" data-validate = "Enter name">
+						<input class="input100" type="text" name="name" placeholder="Name" id="name">
+						<span class="focus-input100" data-placeholder="&#xf290;"></span>
+                    </div>
+                    
+                    <div class="wrap-input100 validate-input" data-id="email" data-validate = "Enter email">
+						<input class="input100" type="email" name="email" placeholder="Email" id="email">
+						<span class="focus-input100" data-placeholder="&#xf15a;"></span>
+                    </div>
+                    
+					<div class="wrap-input100 validate-input" data-id="username" data-validate = "Enter username">
+						<input class="input100" type="text" name="username" placeholder="Username" id="username">
+						<span class="focus-input100" data-placeholder="&#xf207;"></span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-id="password" data-validate="Enter password">
+						<input class="input100" type="password" name="pass" placeholder="Password" id="password">
+						<span class="focus-input100" data-placeholder="&#xf191;"></span>
+					</div>
+
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn" id="registerBtn">
+							Register
+						</button>
+					</div>
+
+					<div class="text-center p-t-90">
+                        <p class="text-white">Already have an account?</p>
+						<a class="txt1" href="/login">
+							Login
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+
+	<div id="dropDownSelect1"></div>
+	
+<!--===============================================================================================-->
+<script src="reg_assets/vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+<!--===============================================================================================-->
+<script src="assets/js/jquery.cookie.js"></script>
+<!--===============================================================================================-->
+<script src="reg_assets/vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+<script src="reg_assets/vendor/bootstrap/js/popper.js"></script>
+<script src="reg_assets/vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+<!--===============================================================================================-->
+<script src="reg_assets/vendor/daterangepicker/moment.min.js"></script>
+<script src="reg_assets/vendor/daterangepicker/daterangepicker.js"></script>
+<!--===============================================================================================-->
+<script src="reg_assets/vendor/countdowntime/countdowntime.js"></script>
+<!--===============================================================================================-->
+<script src="reg_assets/js/main.js"></script>
+</body>
+<script>
+var server = "http://localhost:3000";
+checkAuth();
+function checkAuth() {
+	if($.cookie('token') != 'null'){
+		$.ajax({
+			type: 'GET',
+			headers: {'content-type': 'application/json'},
+			url: `${server}/check-auth/${$.cookie('token')}`,
+			success: (data)=> {
+				if(data.message == 'Authentic'){
+					window.location.href = '/chat-room';
+				}else{
+					window.location.href = '/register';
+				}
+			},
+			error: (errro)=> {
+				
+			}
+		});  
+	}
+}
+$(document).ready(()=>{
+    $('#registerBtn').on('click',(e)=> {
+        e.preventDefault();
+        let name = $('#name').val();
+        let email = $('#email').val();
+        let username = $('#username').val();
+        let password = $('#password').val();
+        let data = {
+            name: name,
+            email: email,
+            username: username,
+            password: password
+		};
+        $.ajax({
+            type: 'POST',
+            data: data,
+            headers: {'content-type': 'application/x-www-form-urlencoded'},
+            url: `${server}/register`,
+            success: (user)=> {
+				let expTime = new Date();
+				expTime.setTime(expTime.getTime() + (14400 * 60 * 1000)); // Expires in 10 days
+				$.cookie('token',user.id, {path: '/', expires: expTime});
+				window.location.href = '/chat-room';
+			},
+			error: (errors)=> {
+				if(errors.responseJSON.error != undefined){
+					alert(errors.responseJSON.error);
+				}
+				console.log(errors.responseJSON);
+				for(error in errors.responseJSON.errors){
+					$(`[data-id="${error}"]`).addClass('alert-validate');
+				}
+			}
+        });
+    });
+});
+</script>
+</html>

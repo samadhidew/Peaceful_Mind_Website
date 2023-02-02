@@ -1,0 +1,26 @@
+{
+  "name": "chatting",
+  "version": "1.0.0",
+  "description": "Chat",
+  "main": "app.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha PATH_OF_YOUR_JS_TEST_FILES --exit",
+    "start": "node app.js"
+  },
+
+  "author": "PK",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.2.3",
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.19.0",
+    "chai": "^4.3.7",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "mocha": "^10.2.0",
+    "mongoose": "^5.8.9",
+    "socket.io": "^2.3.0",
+    "vue": "^2.6.11",
+    "vue-router": "^3.1.5"
+  }
+}
